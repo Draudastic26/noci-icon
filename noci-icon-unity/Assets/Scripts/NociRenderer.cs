@@ -8,13 +8,8 @@ namespace drstc.nociincon
         private SpriteRenderer rend;
         private NociConfig config;
 
-        private void Start()
-        {
-            Refresh();
-        }
-
         public void SetConfig(NociConfig newConfig)
-        {
+        {   
             config = newConfig;
         }
 

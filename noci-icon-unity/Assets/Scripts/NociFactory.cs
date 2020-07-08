@@ -53,24 +53,34 @@ namespace drstc.nociincon
                 grid = EvaluateStates(grid);
             }
 
+
             grid = GridFlip(grid);
-            
+
+            // DebugGrid(grid);
+
             grid = SetContour(grid);
 
+            // DebugGrid(grid);
+
+
+            var tex = createTexture2D(grid);
+            return Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
+        }
+
+        private static Texture2D createTexture2D(CellState[,] grid)
+        {
             var tex = new Texture2D(config.Dimension, config.Dimension);
             tex.filterMode = FilterMode.Point;
 
-            for (var i = 0; i < grid.GetLength(0); i++)
+            for (var x = 0; x < grid.GetLength(0); x++)
             {
-                for (var j = 0; j < grid.GetLength(1); j++)
+                for (var y = 0; y < grid.GetLength(1); y++)
                 {
-                    tex.SetPixel(i, j, GetColor(grid[i, j]));
+                    tex.SetPixel(x, y, GetColor(grid[x, y]));
                 }
             }
-
             tex.Apply();
-
-            return Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
+            return tex;
         }
 
         private static CellState[,] GridFlip(CellState[,] grid)
@@ -119,7 +129,7 @@ namespace drstc.nociincon
         {
             var newGrid = grid.Clone() as CellState[,];
 
-            for (var i = 1; i < grid.GetLength(0); i++)
+            for (var i = 1; i < grid.GetLength(0) - 1; i++)
             {
                 for (var j = 1; j < grid.GetLength(1) - 1; j++)
                 {
@@ -150,12 +160,20 @@ namespace drstc.nociincon
         {
             var newGrid = grid.Clone() as CellState[,];
 
-            for (var i = 0; i < grid.GetLength(0); i++)
+            var path = "Assets/Sprites/NOCI_DEBUG/dgb";
+
+            for (var x = 0; x < grid.GetLength(0); x++)
             {
-                for (var j = 0; j < grid.GetLength(1); j++)
+                for (var y = 0; y < grid.GetLength(1); y++)
                 {
-                    var neighbours = GetLivingNeighbours(grid, i, j);
-                    if (grid[i, j] == CellState.Dead && neighbours > 0) newGrid[i, j] = CellState.Contour;
+                    if (grid[x, y] == CellState.Dead)
+                    {
+                        var neighbours = GetLivingNeighbours(grid, x, y);
+                        if (neighbours > 0)
+                        {
+                            newGrid[x, y] = CellState.Contour;
+                        }
+                    }
                 }
             }
             return newGrid;
@@ -192,6 +210,29 @@ namespace drstc.nociincon
                 default:
                     return Color.magenta;
             }
+        }
+
+        private static void DebugGrid(CellState[,] grid)
+        {
+            var logArray = "";
+
+            for (var y = 0; y < grid.GetLength(1); y++)
+            {
+                for (var x = 0; x < grid.GetLength(0); x++)
+                {
+                    logArray += (int)grid[x, y] + "\t";
+                }
+                logArray += "\n";
+            }
+
+            Debug.Log($"{logArray}");
+        }
+
+        public static void SaveTextureAsPNG(Texture2D texture, string fullPath)
+        {
+            byte[] _bytes = texture.EncodeToPNG();
+            System.IO.File.WriteAllBytes(fullPath, _bytes);
+            //Debug.Log(_bytes.Length / 1024 + "Kb was saved as: " + fullPath);
         }
     }
 }
