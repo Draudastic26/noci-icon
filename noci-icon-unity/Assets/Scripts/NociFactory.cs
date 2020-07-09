@@ -4,38 +4,6 @@ using UnityEngine;
 
 namespace drstc.nociincon
 {
-    public enum CellState { Dead = 0, Alive = 1, Contour = 2 }
-
-    public class NociConfig
-    {
-        public int Dimension
-        {
-            get { return dimension; }
-            set
-            {
-                var r = value % 2;
-                var newValue = value;
-                if (r != 0)
-                {
-                    newValue++;
-                    Debug.Log($"Dimension is not even and set to {newValue}");
-                }
-                dimension = newValue;
-            }
-        }
-
-        public int Iterations
-        {
-            get { return iterations; }
-            set { iterations = value; }
-        }
-
-        private int dimension;
-        private int iterations;
-
-        public NociConfig(int dimension, int iterations) => (Dimension, Iterations) = (dimension, iterations);
-    }
-
     public static class NociFactory
     {
         private static NociConfig config;
@@ -43,25 +11,17 @@ namespace drstc.nociincon
         public static Sprite GetSprite(NociConfig nociConfig)
         {
             config = nociConfig;
-            var halfDim = config.Dimension / 2;
 
-            // First create some noise
-            var grid = GetInitNoise();
+            // First create some noise with half x dimension
+            var grid = GetGridWithInitNoise();
 
             for (int i = 0; i < config.Iterations; i++)
             {
                 grid = EvaluateStates(grid);
             }
 
-
-            grid = GridFlip(grid);
-
-            // DebugGrid(grid);
-
+            grid = Unfold(grid);
             grid = SetContour(grid);
-
-            // DebugGrid(grid);
-
 
             var tex = createTexture2D(grid);
             return Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
@@ -72,18 +32,31 @@ namespace drstc.nociincon
             var tex = new Texture2D(config.Dimension, config.Dimension);
             tex.filterMode = FilterMode.Point;
 
-            for (var x = 0; x < grid.GetLength(0); x++)
-            {
-                for (var y = 0; y < grid.GetLength(1); y++)
-                {
-                    tex.SetPixel(x, y, GetColor(grid[x, y]));
-                }
-            }
+            var colors = GetColors(grid);
+
+            tex.SetPixels(colors);
             tex.Apply();
             return tex;
         }
 
-        private static CellState[,] GridFlip(CellState[,] grid)
+        private static Color[] GetColors(CellState[,] grid)
+        {
+            var width = grid.GetLength(0);
+            var height = grid.GetLength(1);
+            var colors = new Color[width * height];
+
+            for (var x = 0; x < width; x++)
+            {
+                for (var y = 0; y < height; y++)
+                {
+                    //tex.SetPixel(x, y, GetColor(grid[x, y]));
+                    colors[width * y + x] = GetColor(grid[x, y]);
+                }
+            }
+            return colors;
+        }
+
+        private static CellState[,] Unfold(CellState[,] grid)
         {
             var newGrid = new CellState[config.Dimension, config.Dimension];
 
@@ -108,17 +81,20 @@ namespace drstc.nociincon
             return newGrid;
         }
 
-        private static CellState[,] GetInitNoise()
+        private static CellState[,] GetGridWithInitNoise()
         {
             var halfDim = config.Dimension / 2;
             var grid = new CellState[halfDim, config.Dimension];
 
+            var width = grid.GetLength(0);
+            var height = grid.GetLength(1);
+
             // Simple random noise 50:50
-            for (var i = 1; i < grid.GetLength(0); i++)
+            for (var x = 1; x < grid.GetLength(0); x++)
             {
-                for (var j = 1; j < grid.GetLength(1) - 1; j++)
+                for (var y = 1; y < grid.GetLength(1) - 1; y++)
                 {
-                    grid[i, j] = (CellState)Random.Range(0, 2);
+                    grid[x, y] = (CellState)Random.Range(0, 2);
                 }
             }
 
@@ -129,18 +105,18 @@ namespace drstc.nociincon
         {
             var newGrid = grid.Clone() as CellState[,];
 
-            for (var i = 1; i < grid.GetLength(0) - 1; i++)
+            for (var x = 1; x < grid.GetLength(0); x++)
             {
-                for (var j = 1; j < grid.GetLength(1) - 1; j++)
+                for (var y = 1; y < grid.GetLength(1) - 1; y++)
                 {
-                    var neighbours = GetLivingNeighbours(grid, i, j);
+                    var neighbours = GetLivingNeighbours(grid, x, y);
 
                     // living cell
-                    if (TryGet(grid, i, j) == CellState.Alive)
+                    if (TryGet(grid, x, y) == CellState.Alive)
                     {
                         if (neighbours < 2 || neighbours > 3)
                         {
-                            newGrid[i, j] = CellState.Dead;
+                            newGrid[x, y] = CellState.Dead;
                         }
                     }
                     // dead cell                    
@@ -148,7 +124,7 @@ namespace drstc.nociincon
                     {
                         if (neighbours <= 1)
                         {
-                            newGrid[i, j] = CellState.Alive;
+                            newGrid[x, y] = CellState.Alive;
                         }
                     }
                 }
@@ -159,8 +135,6 @@ namespace drstc.nociincon
         private static CellState[,] SetContour(CellState[,] grid)
         {
             var newGrid = grid.Clone() as CellState[,];
-
-            var path = "Assets/Sprites/NOCI_DEBUG/dgb";
 
             for (var x = 0; x < grid.GetLength(0); x++)
             {
@@ -184,7 +158,7 @@ namespace drstc.nociincon
             var aliveCount = 0;
             aliveCount += (int)TryGet(grid, x - 1, y);
             aliveCount += (int)TryGet(grid, x, y + 1);
-            aliveCount += (int)TryGet(grid, x + 1, y + 1);
+            aliveCount += (int)TryGet(grid, x + 1, y);
             aliveCount += (int)TryGet(grid, x, y - 1);
             return aliveCount;
         }
@@ -210,29 +184,6 @@ namespace drstc.nociincon
                 default:
                     return Color.magenta;
             }
-        }
-
-        private static void DebugGrid(CellState[,] grid)
-        {
-            var logArray = "";
-
-            for (var y = 0; y < grid.GetLength(1); y++)
-            {
-                for (var x = 0; x < grid.GetLength(0); x++)
-                {
-                    logArray += (int)grid[x, y] + "\t";
-                }
-                logArray += "\n";
-            }
-
-            Debug.Log($"{logArray}");
-        }
-
-        public static void SaveTextureAsPNG(Texture2D texture, string fullPath)
-        {
-            byte[] _bytes = texture.EncodeToPNG();
-            System.IO.File.WriteAllBytes(fullPath, _bytes);
-            //Debug.Log(_bytes.Length / 1024 + "Kb was saved as: " + fullPath);
         }
     }
 }

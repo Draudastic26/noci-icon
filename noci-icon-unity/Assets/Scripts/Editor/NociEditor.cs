@@ -9,7 +9,10 @@ namespace drstc.nociincon
         private readonly string urlStyle = "Assets/Scripts/Editor/NociEditor.uss";
 
         private NociConfig defaultConfig;
-        private VisualElement iconElement;
+        private VisualElement elementIcon;
+
+        private Texture2D generatedTex; 
+
 
         [MenuItem("Tools/Noci icon generator")]
         public static void StartWindow()
@@ -32,30 +35,40 @@ namespace drstc.nociincon
             var root = rootVisualElement;
             root.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>(urlStyle));
 
-            var header = new Label("NOCI");
+            var header = new Label("NOCI | ICON");
             header.AddToClassList("heading");
 
-            var generateBtn = new Button() { text = "Refresh" };
-            generateBtn.clickable.clicked += () => Refresh();
+            var btnGenerate = new Button() { text = "Refresh" };
+            btnGenerate.clickable.clicked += () => Refresh();
 
-            var container = new VisualElement();
-            container.AddToClassList("container");
+            var btnSave = new Button() { text = "Save" };
+            btnSave.clickable.clicked += () => Save();
 
-            iconElement = new VisualElement();
-            iconElement.AddToClassList("spriteImage");
-            container.Add(iconElement);
+            var elementContainer = new VisualElement();
+            elementContainer.AddToClassList("container");
+
+            elementIcon = new VisualElement();
+            elementIcon.AddToClassList("spriteImage");
+            elementContainer.Add(elementIcon);
             
-            iconElement.style.backgroundImage = NociFactory.GetSprite(defaultConfig).texture;
+            Refresh();
 
             // Adds it to the root.
             root.Add(header);
-            root.Add(generateBtn);
-            root.Add(container);
+            root.Add(btnGenerate);
+            root.Add(elementContainer);
+            root.Add(btnSave);
         }
 
         private void Refresh()
         {
-            iconElement.style.backgroundImage = NociFactory.GetSprite(defaultConfig).texture;
+            generatedTex = NociFactory.GetSprite(defaultConfig).texture;
+            elementIcon.style.backgroundImage = generatedTex;
+        }
+        private void Save()
+        {
+            NociUtils.SaveTextureAsPNG(generatedTex, "Assets/Sprites", "test");
+            AssetDatabase.Refresh();
         }
     }
 }
