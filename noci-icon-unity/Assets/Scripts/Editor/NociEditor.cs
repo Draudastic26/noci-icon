@@ -8,11 +8,11 @@ namespace drstc.nociincon
     {
         private readonly string urlStyle = "Assets/Scripts/Editor/NociEditor.uss";
 
-        private NociConfig defaultConfig;
         private VisualElement elementIcon;
+        private Texture2D generatedTex;
 
-        private Texture2D generatedTex; 
-
+        private NociConfig defaultConfig;
+        private NociFactory noci;
 
         [MenuItem("Tools/" + NociGlobals.NOCI_NAME + " generator")]
         public static void StartWindow()
@@ -29,7 +29,8 @@ namespace drstc.nociincon
 
         private void OnEnable()
         {
-            defaultConfig = new NociConfig(10, 2);
+            defaultConfig = new NociConfig(new Vector2Int(10, 10), 2, true);
+            noci = new NociFactory(defaultConfig);
 
             // Reference to the root of the window.
             var root = rootVisualElement;
@@ -50,8 +51,8 @@ namespace drstc.nociincon
             elementIcon = new VisualElement();
             elementIcon.AddToClassList("spriteImage");
             elementContainer.Add(elementIcon);
-            
-            Refresh();
+
+            SetIconTexture();
 
             // Adds it to the root.
             root.Add(header);
@@ -62,9 +63,16 @@ namespace drstc.nociincon
 
         private void Refresh()
         {
-            generatedTex = NociFactory.GetSprite(defaultConfig).texture;
+            noci.Reroll();
+            SetIconTexture();
+        }
+
+        private void SetIconTexture()
+        {
+            generatedTex = noci.GetTexture2D();
             elementIcon.style.backgroundImage = generatedTex;
         }
+
         private void Save()
         {
             NociUtils.SaveTextureAsPNG(generatedTex, "Assets/Sprites", "test");

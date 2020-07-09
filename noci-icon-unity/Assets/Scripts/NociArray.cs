@@ -14,17 +14,17 @@ namespace drstc.nociincon
 
         private void Start()
         {
-            var config = new NociConfig(10, 2);
+            var config = new NociConfig(new Vector2Int(10, 10), 2, true);
 
             var dimLength = spriteCount.x * spriteCount.y;
             nociRends = new NociRenderer[dimLength];
 
-            var offset = (Vector2)(spriteCount / 2);
-            offset.x = offset.x + (gap * (spriteCount.x - 1) / 2f);
-            offset.y = offset.y + (gap * (spriteCount.y - 1) / 2f);
+            var offset = (Vector2)(spriteCount) / 2f;
+            offset.x = offset.x + ((gap * (spriteCount.x - 1)) / 2f) - spriteSize * 0.5f;
+            offset.y = offset.y + ((gap * (spriteCount.y - 1)) / 2f) - spriteSize * 0.5f;
 
             // 100.0 = pixel per unit value
-            var spriteScale = 100.0f / (spriteSize * config.Dimension);
+            var spriteScale = 100.0f / (spriteSize * config.Dimension.x);
 
             for (var i = 0; i < nociRends.Length; i++)
             {

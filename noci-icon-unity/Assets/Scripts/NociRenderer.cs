@@ -6,19 +6,29 @@ namespace drstc.nociincon
     public class NociRenderer : MonoBehaviour
     {
         private SpriteRenderer rend;
-        private NociConfig config;
+        public NociConfig config;
+
+        private NociFactory noci;
+
+        private void Start()
+        {
+            if (config == null) SetConfig(null);
+        }
 
         public void SetConfig(NociConfig newConfig)
-        {   
+        {
+            // Start with default config
+            if (newConfig == null) newConfig = new NociConfig(new Vector2Int(10, 10), 2, true);
+            if (rend == null) rend = GetComponent<SpriteRenderer>();
             config = newConfig;
+            noci = new NociFactory(config);
+            rend.sprite = noci.GetSprite();
         }
 
         public void Refresh()
         {
-            if (config == null) config = new NociConfig(8, 2);
-            if (rend == null) rend = GetComponent<SpriteRenderer>();
-
-            rend.sprite = NociFactory.GetSprite(config);
+            noci.Reroll();
+            rend.sprite = noci.GetSprite();
         }
     }
 }

@@ -11,6 +11,7 @@ namespace drstc.nociincon
         public NociConfig Config { get; private set; }
 
         private CellState[,] grid;
+        private Vector2Int[] contourCoordinates;
 
         private int halfWidth;
 
@@ -18,10 +19,35 @@ namespace drstc.nociincon
 
         public NociFactory(NociConfig nociConfig)
         {
-            Config = nociConfig;
+            Reroll(nociConfig);
+            Debug.Log($"Generated a new NOCI | ICON!");
+        }
 
+        public Sprite GetSprite()
+        {
+            // TODO: May allow to specify size?
+            return Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
+        }
+
+        public Texture2D GetTexture2D()
+        {
+            // TODO: May allow to specify size?
+            return texture;
+        }
+
+        public void Reroll()
+        {
+            GenerateIcon();
+        }
+        public void Reroll(NociConfig newConfig)
+        {
+            Config = newConfig;
             halfWidth = Config.Dimension.x / 2;
+            Reroll();
+        }
 
+        private void GenerateIcon()
+        {
             // First create some noise with half x dimension
             grid = CreateHalfGridWithInitNoise();
 
@@ -32,19 +58,12 @@ namespace drstc.nociincon
 
             //Attention! Changes dimension of grid
             grid = Unfold();
-            grid = SetContour();
+
+            contourCoordinates = GetContourCoordinates();
+
+            if (Config.DrawContour) grid = SetContour();
 
             texture = createTexture2D();
-        }
-
-        public Sprite GetSprite()
-        {
-            return Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
-        }
-
-        public Texture2D GetTexture2D()
-        {
-            return texture;
         }
 
         private CellState[,] CreateHalfGridWithInitNoise()
@@ -105,8 +124,7 @@ namespace drstc.nociincon
             {
                 for (var y = 0; y < height; y++)
                 {
-                    //tex.SetPixel(x, y, GetColor(grid[x, y]));
-                    colors[width * y + x] = GetPixelColor(grid[x, y]);
+                    colors[width * y + x] = GetCellColor(grid[x, y]);
                 }
             }
             return colors;
@@ -137,9 +155,9 @@ namespace drstc.nociincon
             return newGrid;
         }
 
-        private CellState[,] SetContour()
+        private Vector2Int[] GetContourCoordinates()
         {
-            var newGrid = grid.Clone() as CellState[,];
+            var contours = new List<Vector2Int>();
 
             for (var x = 0; x < grid.GetLength(0); x++)
             {
@@ -150,11 +168,40 @@ namespace drstc.nociincon
                         var neighbours = GetLivingNeighbours(x, y);
                         if (neighbours > 0)
                         {
-                            newGrid[x, y] = CellState.Contour;
+                            contours.Add(new Vector2Int(x, y));
                         }
                     }
                 }
             }
+
+            return contours.ToArray();
+        }
+
+        private CellState[,] SetContour()
+        {
+            var newGrid = grid.Clone() as CellState[,];
+            for (var i = 0; i < contourCoordinates.Length; i++)
+            {
+                newGrid[contourCoordinates[i].x, contourCoordinates[i].y] = CellState.Contour;
+            }
+            return newGrid;
+        }
+
+        private CellState[,] RemoveContour()
+        {
+            var newGrid = grid.Clone() as CellState[,];
+
+            for (var x = 0; x < grid.GetLength(0); x++)
+            {
+                for (var y = 0; y < grid.GetLength(1); y++)
+                {
+                    if (grid[x, y] == CellState.Contour)
+                    {
+                        newGrid[x, y] = CellState.Dead;
+                    }
+                }
+            }
+
             return newGrid;
         }
 
@@ -176,7 +223,7 @@ namespace drstc.nociincon
                 return grid[x, y];
         }
 
-        private static Color GetPixelColor(CellState state)
+        private static Color GetCellColor(CellState state)
         {
             switch (state)
             {
