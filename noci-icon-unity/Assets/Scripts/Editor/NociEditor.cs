@@ -14,14 +14,14 @@ namespace drstc.nociincon
         private Texture2D generatedTex; 
 
 
-        [MenuItem("Tools/Noci icon generator")]
+        [MenuItem("Tools/" + NociGlobals.NOCI_NAME + " generator")]
         public static void StartWindow()
         {
             // Opens the window, otherwise focuses it if it’s already open.
             var window = GetWindow<NociEditor>();
 
             // Adds a title to the window.
-            window.titleContent = new GUIContent("Noci icon generator");
+            window.titleContent = new GUIContent(NociGlobals.NOCI_NAME + " generator");
 
             // Sets a minimum size to the window.
             window.minSize = new Vector2(250, 50);
@@ -35,7 +35,7 @@ namespace drstc.nociincon
             var root = rootVisualElement;
             root.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>(urlStyle));
 
-            var header = new Label("NOCI | ICON");
+            var header = new Label(NociGlobals.NOCI_NAME);
             header.AddToClassList("heading");
 
             var btnGenerate = new Button() { text = "Refresh" };

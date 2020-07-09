@@ -4,39 +4,95 @@ using UnityEngine;
 
 namespace drstc.nociincon
 {
-    public static class NociFactory
-    {
-        private static NociConfig config;
+    public enum CellState { Dead = 0, Alive = 1, Contour = 2 }
 
-        public static Sprite GetSprite(NociConfig nociConfig)
+    public class NociFactory
+    {
+        public NociConfig Config { get; private set; }
+
+        private CellState[,] grid;
+
+        private int halfWidth;
+
+        private Texture2D texture;
+
+        public NociFactory(NociConfig nociConfig)
         {
-            config = nociConfig;
+            Config = nociConfig;
+
+            halfWidth = Config.Dimension.x / 2;
 
             // First create some noise with half x dimension
-            var grid = GetGridWithInitNoise();
+            grid = CreateHalfGridWithInitNoise();
 
-            for (int i = 0; i < config.Iterations; i++)
+            for (int i = 0; i < Config.Iterations; i++)
             {
-                grid = EvaluateStates(grid);
+                grid = EvaluateStates();
             }
 
-            grid = Unfold(grid);
-            grid = SetContour(grid);
+            //Attention! Changes dimension of grid
+            grid = Unfold();
+            grid = SetContour();
 
-            var tex = createTexture2D(grid);
-            return Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
+            texture = createTexture2D();
         }
 
-        private static Texture2D createTexture2D(CellState[,] grid)
+        public Sprite GetSprite()
         {
-            var tex = new Texture2D(config.Dimension, config.Dimension);
-            tex.filterMode = FilterMode.Point;
+            return Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
+        }
 
-            var colors = GetColors(grid);
+        public Texture2D GetTexture2D()
+        {
+            return texture;
+        }
 
-            tex.SetPixels(colors);
-            tex.Apply();
-            return tex;
+        private CellState[,] CreateHalfGridWithInitNoise()
+        {
+            var newGrid = new CellState[halfWidth, Config.Dimension.y];
+
+            // Skip index 0 in x and y to leave space for contour. Just skip last index in Y
+            for (var x = 1; x < newGrid.GetLength(0); x++)
+            {
+                for (var y = 1; y < newGrid.GetLength(1) - 1; y++)
+                {
+                    // Simple random noise 50:50
+                    newGrid[x, y] = (CellState)Random.Range(0, 2);
+                }
+            }
+
+            return newGrid;
+        }
+
+        private CellState[,] EvaluateStates()
+        {
+            var newGrid = grid.Clone() as CellState[,];
+
+            for (var x = 1; x < grid.GetLength(0); x++)
+            {
+                for (var y = 1; y < grid.GetLength(1) - 1; y++)
+                {
+                    var neighbours = GetLivingNeighbours(x, y);
+
+                    // living cell
+                    if (TryGet(x, y) == CellState.Alive)
+                    {
+                        if (neighbours < 2 || neighbours > 3)
+                        {
+                            newGrid[x, y] = CellState.Dead;
+                        }
+                    }
+                    // dead cell                    
+                    else
+                    {
+                        if (neighbours <= 1)
+                        {
+                            newGrid[x, y] = CellState.Alive;
+                        }
+                    }
+                }
+            }
+            return newGrid;
         }
 
         private static Color[] GetColors(CellState[,] grid)
@@ -50,15 +106,15 @@ namespace drstc.nociincon
                 for (var y = 0; y < height; y++)
                 {
                     //tex.SetPixel(x, y, GetColor(grid[x, y]));
-                    colors[width * y + x] = GetColor(grid[x, y]);
+                    colors[width * y + x] = GetPixelColor(grid[x, y]);
                 }
             }
             return colors;
         }
 
-        private static CellState[,] Unfold(CellState[,] grid)
+        private CellState[,] Unfold()
         {
-            var newGrid = new CellState[config.Dimension, config.Dimension];
+            var newGrid = new CellState[Config.Dimension.x, Config.Dimension.y];
 
             for (var i = 0; i < grid.GetLength(0); i++)
             {
@@ -81,58 +137,7 @@ namespace drstc.nociincon
             return newGrid;
         }
 
-        private static CellState[,] GetGridWithInitNoise()
-        {
-            var halfDim = config.Dimension / 2;
-            var grid = new CellState[halfDim, config.Dimension];
-
-            var width = grid.GetLength(0);
-            var height = grid.GetLength(1);
-
-            // Simple random noise 50:50
-            for (var x = 1; x < grid.GetLength(0); x++)
-            {
-                for (var y = 1; y < grid.GetLength(1) - 1; y++)
-                {
-                    grid[x, y] = (CellState)Random.Range(0, 2);
-                }
-            }
-
-            return grid;
-        }
-
-        private static CellState[,] EvaluateStates(CellState[,] grid)
-        {
-            var newGrid = grid.Clone() as CellState[,];
-
-            for (var x = 1; x < grid.GetLength(0); x++)
-            {
-                for (var y = 1; y < grid.GetLength(1) - 1; y++)
-                {
-                    var neighbours = GetLivingNeighbours(grid, x, y);
-
-                    // living cell
-                    if (TryGet(grid, x, y) == CellState.Alive)
-                    {
-                        if (neighbours < 2 || neighbours > 3)
-                        {
-                            newGrid[x, y] = CellState.Dead;
-                        }
-                    }
-                    // dead cell                    
-                    else
-                    {
-                        if (neighbours <= 1)
-                        {
-                            newGrid[x, y] = CellState.Alive;
-                        }
-                    }
-                }
-            }
-            return newGrid;
-        }
-
-        private static CellState[,] SetContour(CellState[,] grid)
+        private CellState[,] SetContour()
         {
             var newGrid = grid.Clone() as CellState[,];
 
@@ -142,7 +147,7 @@ namespace drstc.nociincon
                 {
                     if (grid[x, y] == CellState.Dead)
                     {
-                        var neighbours = GetLivingNeighbours(grid, x, y);
+                        var neighbours = GetLivingNeighbours(x, y);
                         if (neighbours > 0)
                         {
                             newGrid[x, y] = CellState.Contour;
@@ -153,17 +158,17 @@ namespace drstc.nociincon
             return newGrid;
         }
 
-        private static int GetLivingNeighbours(CellState[,] grid, int x, int y)
+        private int GetLivingNeighbours(int x, int y)
         {
             var aliveCount = 0;
-            aliveCount += (int)TryGet(grid, x - 1, y);
-            aliveCount += (int)TryGet(grid, x, y + 1);
-            aliveCount += (int)TryGet(grid, x + 1, y);
-            aliveCount += (int)TryGet(grid, x, y - 1);
+            aliveCount += (int)TryGet(x - 1, y);
+            aliveCount += (int)TryGet(x, y + 1);
+            aliveCount += (int)TryGet(x + 1, y);
+            aliveCount += (int)TryGet(x, y - 1);
             return aliveCount;
         }
 
-        private static CellState TryGet(CellState[,] grid, int x, int y)
+        private CellState TryGet(int x, int y)
         {
             if (x < 0 || x >= grid.GetLength(0) || y < 0 || y >= grid.GetLength(1))
                 return 0;
@@ -171,7 +176,7 @@ namespace drstc.nociincon
                 return grid[x, y];
         }
 
-        private static Color GetColor(CellState state)
+        private static Color GetPixelColor(CellState state)
         {
             switch (state)
             {
@@ -184,6 +189,18 @@ namespace drstc.nociincon
                 default:
                     return Color.magenta;
             }
+        }
+
+        private Texture2D createTexture2D()
+        {
+            var newTex = new Texture2D(Config.Dimension.x, Config.Dimension.y);
+            newTex.filterMode = FilterMode.Point;
+
+            var colors = GetColors(grid);
+
+            newTex.SetPixels(colors);
+            newTex.Apply();
+            return newTex;
         }
     }
 }
