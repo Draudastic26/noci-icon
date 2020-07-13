@@ -12,7 +12,7 @@ namespace drstc.nociincon
         private Texture2D generatedTex;
 
         private NociConfig defaultConfig;
-        private NociFactory noci;
+        private Noci noci;
 
         [MenuItem("Tools/" + NociGlobals.NOCI_NAME + " generator")]
         public static void StartWindow()
@@ -30,7 +30,7 @@ namespace drstc.nociincon
         private void OnEnable()
         {
             defaultConfig = new NociConfig(new Vector2Int(10, 10), 2, true);
-            noci = new NociFactory(defaultConfig);
+            noci = new Noci(defaultConfig);
 
             // Reference to the root of the window.
             var root = rootVisualElement;

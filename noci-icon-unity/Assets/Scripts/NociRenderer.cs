@@ -8,7 +8,7 @@ namespace drstc.nociincon
         private SpriteRenderer rend;
         public NociConfig config;
 
-        private NociFactory noci;
+        private Noci noci;
 
         private void Start()
         {
@@ -21,7 +21,7 @@ namespace drstc.nociincon
             if (newConfig == null) newConfig = new NociConfig(new Vector2Int(10, 10), 2, true);
             if (rend == null) rend = GetComponent<SpriteRenderer>();
             config = newConfig;
-            noci = new NociFactory(config);
+            noci = new Noci(config);
             rend.sprite = noci.GetSprite();
         }
 

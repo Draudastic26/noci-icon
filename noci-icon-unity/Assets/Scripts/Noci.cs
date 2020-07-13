@@ -6,7 +6,7 @@ namespace drstc.nociincon
 {
     public enum CellState { Dead = 0, Alive = 1, Contour = 2 }
 
-    public class NociFactory
+    public class Noci
     {
         public NociConfig Config { get; private set; }
 
@@ -17,10 +17,9 @@ namespace drstc.nociincon
 
         private Texture2D texture;
 
-        public NociFactory(NociConfig nociConfig)
+        public Noci(NociConfig nociConfig)
         {
             Reroll(nociConfig);
-            Debug.Log($"Generated a new NOCI | ICON!");
         }
 
         public Sprite GetSprite()
