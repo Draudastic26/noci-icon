@@ -17,9 +17,11 @@ namespace drstc.nociincon
 
         private Texture2D texture;
 
+        private System.Random random;
+
         public Noci(NociConfig nociConfig)
         {
-            Reroll(nociConfig);
+            SetConfig(nociConfig);
         }
 
         public Sprite GetSprite()
@@ -38,10 +40,12 @@ namespace drstc.nociincon
         {
             GenerateIcon();
         }
-        public void Reroll(NociConfig newConfig)
+
+        public void SetConfig(NociConfig newConfig)
         {
             Config = newConfig;
             halfWidth = Config.Dimension.x / 2;
+            random = new System.Random(Config.Seed);
             Reroll();
         }
 
@@ -75,7 +79,7 @@ namespace drstc.nociincon
                 for (var y = 1; y < newGrid.GetLength(1) - 1; y++)
                 {
                     // Simple random noise 50:50
-                    newGrid[x, y] = (CellState)Random.Range(0, 2);
+                    newGrid[x, y] = (CellState)random.Next(0, 2);
                 }
             }
 

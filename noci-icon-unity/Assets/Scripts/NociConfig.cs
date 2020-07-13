@@ -29,7 +29,7 @@ namespace drstc.nociincon
                     newValue.x++;
                     Debug.Log($"X dimension was not even, so it is set to {newValue}");
                 }
-                
+
                 dimension = newValue;
             }
         }
@@ -44,11 +44,31 @@ namespace drstc.nociincon
             get { return drawContour; }
             set { drawContour = value; }
         }
+        public int Seed
+        {
+            get { return seed; }
+            set { seed = value; }
+        }
 
         private Vector2Int dimension;
         private int iterations;
         private bool drawContour;
 
-        public NociConfig(Vector2Int dimension, int iterations, bool drawContour) => (Dimension, Iterations, DrawContour) = (dimension, iterations, drawContour);
+        private int seed;
+
+        public NociConfig(Vector2Int dimension, int iterations, bool drawContour)
+        {
+            Dimension = dimension;
+            Iterations = iterations;
+            DrawContour = drawContour;
+            Seed = Random.Range(int.MinValue, int.MaxValue);
+        }
+        public NociConfig(Vector2Int dimension, int iterations, bool drawContour, int seed)
+        {
+            Dimension = dimension;
+            Iterations = iterations;
+            DrawContour = drawContour;
+            Seed = seed;
+        }
     }
 }
