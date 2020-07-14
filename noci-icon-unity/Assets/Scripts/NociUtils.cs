@@ -1,21 +1,18 @@
-using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 namespace drstc.nociincon
 {    
     public static class NociUtils
     {
-        public const string EXTENSION_PNG = ".png";
-
-        public static void SaveTextureAsPNG(Texture2D texture, string path, string fileName)
+        public static void SaveTextureAsPNG(Texture2D texture, string path)
         {
-            fileName += EXTENSION_PNG;
-            var filePath = Path.Combine(path, fileName);
-            System.IO.FileInfo file = new System.IO.FileInfo(filePath);
+            System.IO.FileInfo file = new System.IO.FileInfo(path);
             file.Directory.Create();
+            var uniqueFileName = AssetDatabase.GenerateUniqueAssetPath(path);
             byte[] bytes = texture.EncodeToPNG();
-            System.IO.File.WriteAllBytes(file.FullName, bytes);
-            Debug.Log(bytes.Length + "bytes were saved as: " + file.FullName);
+            System.IO.File.WriteAllBytes(uniqueFileName, bytes);
+            Debug.Log(bytes.Length + "bytes were saved as: " + uniqueFileName);
         }
     }
 }

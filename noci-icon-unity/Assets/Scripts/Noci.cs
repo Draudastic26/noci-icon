@@ -9,6 +9,8 @@ namespace drstc.nociincon
     public class Noci
     {
         public NociConfig Config { get; private set; }
+        public int Seed { get; private set; }
+        public int RerollCount { get; private set; }
 
         private CellState[,] grid;
         private Vector2Int[] contourCoordinates;
@@ -19,8 +21,14 @@ namespace drstc.nociincon
 
         private System.Random random;
 
-        public Noci(NociConfig nociConfig)
+        public Noci(NociConfig nociConfig) : this(nociConfig, Random.Range(int.MinValue, int.MaxValue))
+        { }
+
+        public Noci(NociConfig nociConfig, int seed)
         {
+            Seed = seed;
+            random = new System.Random(seed);
+            RerollCount = 0;
             SetConfig(nociConfig);
         }
 
@@ -38,18 +46,27 @@ namespace drstc.nociincon
 
         public void Reroll()
         {
-            GenerateIcon();
+            RerollCount++;
+            GenerateGrid();
+            GenerateTexture();
         }
 
         public void SetConfig(NociConfig newConfig)
         {
-            Config = newConfig;
+            // Just regenerate grid, when dimension or iteration changed?
+            var regenerateGrid = Config == null ||
+                                 Config.Dimension != newConfig.Dimension ||
+                                 Config.Iterations != newConfig.Iterations;
+
+            Config = new NociConfig(newConfig);
             halfWidth = Config.Dimension.x / 2;
-            random = new System.Random(Config.Seed);
-            Reroll();
+
+            if (regenerateGrid) GenerateGrid();
+
+            GenerateTexture();
         }
 
-        private void GenerateIcon()
+        private void GenerateGrid()
         {
             // First create some noise with half x dimension
             grid = CreateHalfGridWithInitNoise();
@@ -63,8 +80,12 @@ namespace drstc.nociincon
             grid = Unfold();
 
             contourCoordinates = GetContourCoordinates();
+        }
 
+        private void GenerateTexture()
+        {
             if (Config.DrawContour) grid = SetContour();
+            else grid = RemoveContour();
 
             texture = createTexture2D();
         }

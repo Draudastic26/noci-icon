@@ -42,7 +42,8 @@ namespace drstc.nociincon
                 nociGo.transform.localPosition = Vector3.zero;
                 nociGo.transform.localScale = Vector3.one * spriteScale;
 
-                //config.Iterations = config.Iterations % spriteCount.y; 
+                // Change seed for each renderer
+                // config.Seed = Random.Range(int.MinValue, int.MaxValue); 
 
                 nociRends[i] = nociGo.AddComponent<NociRenderer>();
                 nociRends[i].SetConfig(config);
