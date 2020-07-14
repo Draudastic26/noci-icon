@@ -55,11 +55,11 @@ namespace drstc.nociincon
 
             var vec2Dimension = new Vector2IntField("Cell dimensions");
             vec2Dimension.value = defaultDimension;
-            vec2Dimension.RegisterCallback<ChangeEvent<Vector2Int>>((evt) =>
+            vec2Dimension.RegisterCallback<FocusOutEvent>((evt) =>
             {
-                defaultConfig.Dimension = evt.newValue;
-                // set back value since it could have been an invalid state
-                vec2Dimension.value = defaultConfig.Dimension;
+                defaultConfig.Dimension = vec2Dimension.value;
+                //And change back the value, sice it might was not updated due to some restrictions
+                vec2Dimension.value = defaultConfig.Dimension; 
                 UpdateConfig();
             });
 
