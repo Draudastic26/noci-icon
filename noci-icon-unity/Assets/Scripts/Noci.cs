@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace drstc.nociincon
@@ -21,9 +20,17 @@ namespace drstc.nociincon
 
         private System.Random random;
 
+        /// <summary>
+        /// Noci constructor with a random seed.
+        /// </summary>
+        /// <param name="nociConfig">Defines the configuration</param>
         public Noci(NociConfig nociConfig) : this(nociConfig, Random.Range(int.MinValue, int.MaxValue))
         { }
 
+        /// <summary>
+        /// Noci constructor with seed.
+        /// </summary>
+        /// <param name="nociConfig">Defines the configuration</param>
         public Noci(NociConfig nociConfig, int seed)
         {
             Seed = seed;
@@ -32,18 +39,27 @@ namespace drstc.nociincon
             SetConfig(nociConfig);
         }
 
+        /// <summary>
+        /// Creates a sprite with the same content and dimensions as the texture.
+        /// </summary>
         public Sprite GetSprite()
         {
             // TODO: May allow to specify size?
             return Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
         }
 
+        /// <summary>
+        /// Returns the noci texture.
+        /// </summary>
         public Texture2D GetTexture2D()
         {
             // TODO: May allow to specify size?
             return texture;
         }
 
+        /// <summary>
+        /// Will create another noci texture based on the given config. All based on the seed passed (or generated) in the constructor.
+        /// </summary>
         public void Reroll()
         {
             RerollCount++;
@@ -51,6 +67,10 @@ namespace drstc.nociincon
             GenerateTexture();
         }
 
+        /// <summary>
+        /// Will create another noci texture based on the passed config. To access the new texture call GetTexture2d() again.
+        /// </summary>
+        /// <param name="nociConfig">Defines the configuration</param>
         public void SetConfig(NociConfig newConfig)
         {
             // Just regenerate grid, when dimension or iteration changed?
@@ -76,7 +96,7 @@ namespace drstc.nociincon
                 grid = EvaluateStates();
             }
 
-            //Attention! Changes dimension of grid
+            //Attention! Unfold changes dimension of grid
             grid = Unfold();
 
             contourCoordinates = GetContourCoordinates();
@@ -94,7 +114,7 @@ namespace drstc.nociincon
         {
             var newGrid = new CellState[halfWidth, Config.Dimension.y];
 
-            // Skip index 0 in x and y to leave space for contour. Just skip last index in Y
+            // Skip index 0 in x and y to leave space for contour. Just skip last index in Y, since the grid is vertically complete and will just unfold horizontally 
             for (var x = 1; x < newGrid.GetLength(0); x++)
             {
                 for (var y = 1; y < newGrid.GetLength(1) - 1; y++)
@@ -103,7 +123,6 @@ namespace drstc.nociincon
                     newGrid[x, y] = (CellState)random.Next(0, 2);
                 }
             }
-
             return newGrid;
         }
 
@@ -138,7 +157,7 @@ namespace drstc.nociincon
             return newGrid;
         }
 
-        private static Color[] GetColors(CellState[,] grid)
+        private Color[] GetColors(CellState[,] grid)
         {
             var width = grid.GetLength(0);
             var height = grid.GetLength(1);
@@ -166,7 +185,7 @@ namespace drstc.nociincon
                 }
             }
 
-            //Mirror
+            // Mirror/Unfold
             for (var i = 0; i < grid.GetLength(0); i++)
             {
                 var newGridIndex = i + grid.GetLength(0);
@@ -225,7 +244,6 @@ namespace drstc.nociincon
                     }
                 }
             }
-
             return newGrid;
         }
 
@@ -247,16 +265,17 @@ namespace drstc.nociincon
                 return grid[x, y];
         }
 
-        private static Color GetCellColor(CellState state)
+        private Color GetCellColor(CellState state)
         {
             switch (state)
             {
                 case CellState.Alive:
-                    return Color.white;
+                    return Config.CellColor;
                 case CellState.Dead:
+                    // TODO: Maybe also should be configurable
                     return Color.clear;
                 case CellState.Contour:
-                    return Color.black;
+                    return Config.ContourColor;
                 default:
                     return Color.magenta;
             }

@@ -34,34 +34,29 @@ namespace drstc.nociincon
             }
         }
 
-        public int Iterations
-        {
-            get { return iterations; }
-            set { iterations = value; }
-        }
-        public bool DrawContour
-        {
-            get { return drawContour; }
-            set { drawContour = value; }
-        }
+        public int Iterations { get; set; }
+        public bool DrawContour { get; set; }
+        public Color CellColor { get; set; }
+        public Color ContourColor { get; set; }
 
         private Vector2Int dimension;
-        private int iterations;
-        private bool drawContour;
-
 
         public NociConfig(Vector2Int dimension, int iterations, bool drawContour)
         {
             Dimension = dimension;
             Iterations = iterations;
             DrawContour = drawContour;
+            CellColor = Color.white;
+            ContourColor = Color.black;
         }
-        
+
         public NociConfig(NociConfig copyConfig)
         {
             Dimension = copyConfig.Dimension;
             Iterations = copyConfig.Iterations;
             DrawContour = copyConfig.DrawContour;
+            CellColor = copyConfig.CellColor;
+            ContourColor = copyConfig.ContourColor;
         }
     }
 }
