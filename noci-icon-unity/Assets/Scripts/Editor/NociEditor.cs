@@ -14,17 +14,19 @@ namespace drstc.nociincon
         private const int SLIDER_ITERATION_MAX = 10;
 
         private readonly string urlStyle = "Assets/Scripts/Editor/NociEditor.uss";
-        
+
         private readonly Vector2Int defaultDimension = new Vector2Int(10, 10);
         private readonly int defaultIteration = 2;
         private readonly bool defaultContour = true;
         private readonly Color defaultColorCell = Color.white;
         private readonly Color defaultCollorContour = Color.black;
         private readonly string defaultPath = "Assets/Noci/";
+        private readonly int defaultScaleFactor = 20;
 
         private VisualElement elementIcon;
         private TextField fieldSavePath;
         private Texture2D generatedTex;
+        private IntegerField intScaleFactor;
 
         private NociConfig defaultConfig;
         private Noci noci;
@@ -125,6 +127,9 @@ namespace drstc.nociincon
             fieldSavePath = new TextField("Save path");
             fieldSavePath.value = defaultPath;
 
+            intScaleFactor = new IntegerField("Output image scale factor");
+            intScaleFactor.value = defaultScaleFactor;
+
             var elementContainer = new VisualElement();
             elementContainer.AddToClassList("container");
 
@@ -147,6 +152,7 @@ namespace drstc.nociincon
             root.Add(colorCell);
             root.Add(colorContour);
 
+            root.Add(intScaleFactor);
             root.Add(fieldSavePath);
             root.Add(btnSave);
         }
@@ -173,7 +179,7 @@ namespace drstc.nociincon
         {
             var fileName = $"noci_{noci.Seed}_{noci.RerollCount}.png";
             var pathWithSeed = Path.Combine(fieldSavePath.value, fileName);
-            NociUtils.SaveTextureAsPNG(generatedTex, pathWithSeed);
+            NociUtils.SaveTextureAsPNG(noci.GetTexture2D(intScaleFactor.value), pathWithSeed);
             AssetDatabase.Refresh();
         }
     }

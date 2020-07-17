@@ -44,7 +44,6 @@ namespace drstc.nociincon
         /// </summary>
         public Sprite GetSprite()
         {
-            // TODO: May allow to specify size?
             return Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
         }
 
@@ -53,8 +52,29 @@ namespace drstc.nociincon
         /// </summary>
         public Texture2D GetTexture2D()
         {
-            // TODO: May allow to specify size?
             return texture;
+        }
+
+        /// <summary>
+        /// Returns the noci texture in a scaleFactor times larger
+        /// </summary>
+        /// <param name="scaleFactor">The factor to increase the result texture</param>
+        public Texture2D GetTexture2D(int scaleFactor)
+        {
+            if(scaleFactor < 1)
+            {
+                Debug.Log($"Scale factor can't be lower than 1, will be set to 2");
+                scaleFactor = 2;
+            }
+
+            var newTex = new Texture2D(texture.width * scaleFactor, texture.height * scaleFactor);
+            newTex.filterMode = FilterMode.Point;
+
+            var colors = GetColors(grid, newTex.width, newTex.height);
+
+            newTex.SetPixels(colors);
+            newTex.Apply();
+            return newTex;
         }
 
         /// <summary>
@@ -157,20 +177,26 @@ namespace drstc.nociincon
             return newGrid;
         }
 
-        private Color[] GetColors(CellState[,] grid)
+        private Color[] GetColors(CellState[,] grid, int targetWidth, int targetHeight)
         {
-            var width = grid.GetLength(0);
-            var height = grid.GetLength(1);
-            var colors = new Color[width * height];
+            var colors = new Color[targetWidth * targetHeight];
 
-            for (var x = 0; x < width; x++)
+            var dividerX = targetWidth / Config.Dimension.x;
+            var divideY = targetWidth / Config.Dimension.y;
+
+            for (var x = 0; x < targetWidth; x++)
             {
-                for (var y = 0; y < height; y++)
+                for (var y = 0; y < targetHeight; y++)
                 {
-                    colors[width * y + x] = GetCellColor(grid[x, y]);
+                    colors[targetWidth * y + x] = GetCellColor(grid[x / dividerX, y / divideY]);
                 }
             }
             return colors;
+        }
+
+        private Color[] GetColors(CellState[,] grid)
+        {
+            return GetColors(grid, grid.GetLength(0), grid.GetLength(1));
         }
 
         private CellState[,] Unfold()
