@@ -46,6 +46,7 @@ namespace drstc.nociincon
 
         private void OnEnable()
         {
+            // Set defaults
             defaultConfig = new NociConfig(defaultDimension, defaultIteration, defaultContour);
             defaultConfig.CellColor = defaultColorCell;
             defaultConfig.ContourColor = defaultCollorContour;
@@ -59,102 +60,142 @@ namespace drstc.nociincon
             var header = new Label(NOCI_NAME);
             header.AddToClassList("heading");
 
-            var btnRefresh = new Button() { text = "Reroll" };
-            btnRefresh.clickable.clicked += () => Reroll();
+            var btnReroll = new Button() { text = "Reroll" };
+            btnReroll.clickable.clicked += () => Reroll();
 
+
+            // Adds stuff to the root.
+            root.Add(header);
+            root.Add(createIconElements());
+            root.Add(btnReroll);
+
+            root.Add(createConfigElements());
+            root.Add(createStyleElements());
+            root.Add(createSaveElements());
+            SetIconTexture();
+        }
+
+        private VisualElement createIconElements()
+        {
+            elementIcon = new VisualElement();
+            elementIcon.AddToClassList("spriteImage");
+
+            var elementContainer = getContainerElement();
+            elementContainer.Add(elementIcon);
+            return elementContainer;
+        }
+
+        private VisualElement createConfigElements()
+        {
             var vec2Dimension = new Vector2IntField("Cell dimensions");
             vec2Dimension.value = defaultDimension;
             vec2Dimension.RegisterCallback<FocusOutEvent>((evt) =>
-                {
-                    defaultConfig.Dimension = vec2Dimension.value;
-                    //And change back the value, sice it might was not updated due to some restrictions
-                    vec2Dimension.value = defaultConfig.Dimension;
-                    UpdateConfig();
-                });
+            {
+                defaultConfig.Dimension = vec2Dimension.value;
+                //And change back the value, sice it might was not updated due to some restrictions
+                vec2Dimension.value = defaultConfig.Dimension;
+                UpdateConfig();
+            });
+
+            var sliderRow = new VisualElement();
+            sliderRow.AddToClassList("row");
+
+            var sliderIndicator = new Label(defaultIteration.ToString());
+            sliderIndicator.AddToClassList("expand");
 
             var sliderIterations = new SliderInt("Iterations", SLIDER_ITERATION_MIN, SLIDER_ITERATION_MAX);
             sliderIterations.value = defaultIteration;
+            sliderIterations.AddToClassList("expand");
             sliderIterations.RegisterCallback<ChangeEvent<int>>((evt) =>
-                {
-                    defaultConfig.Iterations = evt.newValue;
-                    UpdateConfig();
-                });
+            {
+                defaultConfig.Iterations = evt.newValue;
+                UpdateConfig();
+            });
+
+            sliderRow.Add(sliderIterations);
+            sliderRow.Add(sliderIndicator);
 
             var fieldSeed = new IntegerField("Seed");
             fieldSeed.SetEnabled(false);
             fieldSeed.RegisterCallback<ChangeEvent<int>>((evt) =>
-                {
-                    noci = new Noci(defaultConfig, evt.newValue);
-                    SetIconTexture();
-                });
+            {
+                noci = new Noci(defaultConfig, evt.newValue);
+                SetIconTexture();
+            });
 
             var toggleRandomSeed = new Toggle("Random seed");
             toggleRandomSeed.value = true;
             toggleRandomSeed.RegisterCallback<ChangeEvent<bool>>((evt) =>
-                {
-                    fieldSeed.SetEnabled(!evt.newValue);
-                    noci = evt.newValue ? new Noci(defaultConfig) : new Noci(defaultConfig, fieldSeed.value);
-                    SetIconTexture();
-                });
+            {
+                fieldSeed.SetEnabled(!evt.newValue);
+                noci = evt.newValue ? new Noci(defaultConfig) : new Noci(defaultConfig, fieldSeed.value);
+                SetIconTexture();
+            });
 
+            var elementContainer = getContainerElement();
+            elementContainer.Add(vec2Dimension);
+            elementContainer.Add(sliderRow);
+            elementContainer.Add(toggleRandomSeed);
+            elementContainer.Add(fieldSeed);
+            return elementContainer;
+        }
+
+        private VisualElement createStyleElements()
+        {
             var toggleContour = new Toggle("Draw contour");
             toggleContour.value = defaultContour;
             toggleContour.RegisterCallback<ChangeEvent<bool>>((evt) =>
-                {
-                    defaultConfig.DrawContour = evt.newValue;
-                    UpdateConfig();
-                });
+            {
+                defaultConfig.DrawContour = evt.newValue;
+                UpdateConfig();
+            });
 
             var colorCell = new ColorField("Cell color");
             colorCell.value = defaultColorCell;
             colorCell.RegisterCallback<ChangeEvent<Color>>((evt) =>
-                {
-                    defaultConfig.CellColor = evt.newValue;
-                    UpdateConfig();
-                });
+            {
+                defaultConfig.CellColor = evt.newValue;
+                UpdateConfig();
+            });
 
             var colorContour = new ColorField("Contour color");
             colorContour.value = defaultCollorContour;
             colorContour.RegisterCallback<ChangeEvent<Color>>((evt) =>
-                {
-                    defaultConfig.ContourColor = evt.newValue;
-                    UpdateConfig();
-                });
+            {
+                defaultConfig.ContourColor = evt.newValue;
+                UpdateConfig();
+            });
 
-            var btnSave = new Button() { text = "Save" };
-            btnSave.clickable.clicked += () => Save();
+            var elementContainer = getContainerElement();
+            elementContainer.Add(toggleContour);
+            elementContainer.Add(colorCell);
+            elementContainer.Add(colorContour);
+            return elementContainer;
+        }
 
+        private VisualElement createSaveElements()
+        {
             fieldSavePath = new TextField("Save path");
             fieldSavePath.value = defaultPath;
 
             intScaleFactor = new IntegerField("Output image scale factor");
             intScaleFactor.value = defaultScaleFactor;
 
+            var btnSave = new Button() { text = "Save" };
+            btnSave.clickable.clicked += () => Save();
+
+            var elementContainer = getContainerElement();
+            elementContainer.Add(fieldSavePath);
+            elementContainer.Add(intScaleFactor);
+            elementContainer.Add(btnSave);
+            return elementContainer;
+        }
+
+        private VisualElement getContainerElement()
+        {
             var elementContainer = new VisualElement();
             elementContainer.AddToClassList("container");
-
-            elementIcon = new VisualElement();
-            elementIcon.AddToClassList("spriteImage");
-            elementContainer.Add(elementIcon);
-
-            SetIconTexture();
-
-            // Adds stuff to the root.
-            root.Add(header);
-            root.Add(elementContainer);
-
-            root.Add(btnRefresh);
-            root.Add(vec2Dimension);
-            root.Add(sliderIterations);
-            root.Add(toggleRandomSeed);
-            root.Add(fieldSeed);
-            root.Add(toggleContour);
-            root.Add(colorCell);
-            root.Add(colorContour);
-
-            root.Add(intScaleFactor);
-            root.Add(fieldSavePath);
-            root.Add(btnSave);
+            return elementContainer;
         }
 
         private void UpdateConfig()

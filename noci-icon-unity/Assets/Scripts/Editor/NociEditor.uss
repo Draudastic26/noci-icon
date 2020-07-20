@@ -3,7 +3,7 @@
     font-size: 20px; 
     -unity-font-style: bold;
     -unity-text-align: middle-center;
-    color: #4B4B4B;
+    color: #818181;
 }
 
 .container {
@@ -11,7 +11,7 @@
     margin: 5px;
     padding: 5px;  
     border-width: 3px;
-    border-color: #909090;
+    border-color: #818181;
 }
 
 .spriteImage {
@@ -25,4 +25,8 @@
 
 .row {
     flex-direction: row;
+}
+
+.expand {
+    flex: auto;
 }
