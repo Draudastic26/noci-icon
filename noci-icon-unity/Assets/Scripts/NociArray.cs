@@ -17,17 +17,17 @@ namespace drstc.nociincon
             var dimLength = spriteCount.x * spriteCount.y;
             nociRends = new NociRenderer[dimLength];
 
-            var offset = (Vector2)(spriteCount) / 2f;
-            offset.x = offset.x + ((gap * (spriteCount.x - 1)) / 2f) - spriteSize * 0.5f;
-            offset.y = offset.y + ((gap * (spriteCount.y - 1)) / 2f) - spriteSize * 0.5f;
-
             // 100.0 = pixel per unit value
-            var spriteScale = 100.0f / (spriteSize * config.Dimension.x);
+            var spriteScale = 100.0f / (config.Dimension.x / spriteSize);
+
+            var offset = (Vector2)(spriteCount) / 2f * spriteSize;
+            offset.x = offset.x + ((gap * (spriteCount.x - 1)) / 2f) - (spriteSize * 0.5f);
+            offset.y = offset.y + ((gap * (spriteCount.y - 1)) / 2f) - (spriteSize * 0.5f);
 
             for (var i = 0; i < nociRends.Length; i++)
             {
-                var x = (i % spriteCount.x) - offset.x;
-                var y = offset.y - (i / spriteCount.x);
+                var x = (i % spriteCount.x) * spriteSize - offset.x;
+                var y = offset.y - (i / spriteCount.x) * spriteSize;
                 x += gap * (i % spriteCount.x);
                 y -= gap * (i / spriteCount.x);
 
@@ -39,9 +39,6 @@ namespace drstc.nociincon
                 nociGo.transform.parent = go.transform;
                 nociGo.transform.localPosition = Vector3.zero;
                 nociGo.transform.localScale = Vector3.one * spriteScale;
-
-                // Change seed for each renderer
-                // config.Seed = Random.Range(int.MinValue, int.MaxValue); 
 
                 nociRends[i] = nociGo.AddComponent<NociRenderer>();
                 nociRends[i].SetConfig(config);
