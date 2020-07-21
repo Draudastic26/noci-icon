@@ -101,7 +101,7 @@ namespace drstc.nociincon
             sliderRow.AddToClassList("row");
 
             var sliderIndicator = new Label(defaultIteration.ToString());
-            sliderIndicator.AddToClassList("expand");
+            sliderIndicator.AddToClassList("iteration-lable");
 
             var sliderIterations = new SliderInt("Iterations", SLIDER_ITERATION_MIN, SLIDER_ITERATION_MAX);
             sliderIterations.value = defaultIteration;
@@ -109,6 +109,7 @@ namespace drstc.nociincon
             sliderIterations.RegisterCallback<ChangeEvent<int>>((evt) =>
             {
                 defaultConfig.Iterations = evt.newValue;
+                sliderIndicator.text = defaultConfig.Iterations.ToString();
                 UpdateConfig();
             });
 

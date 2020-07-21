@@ -28,5 +28,11 @@
 }
 
 .expand {
-    flex: auto;
+    flex: 1 1 auto;
+}
+
+.iteration-lable {
+    margin-left: 5px;
+    border-width: 1px;
+    border-color: #818181;
 }
