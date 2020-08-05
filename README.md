@@ -18,9 +18,8 @@ TODO: Either as editor tool and save as Sprite or runtime with several options.
 
 ![noci-generator](img/noci-generator.png =256x)
 
-
 ## References
 
 - Based on the algorithm by [yurkth](https://github.com/yurkth/sprator)
 
-**Unity 2019.3.15f1**
+**Unity 2020.1.0f1**
