@@ -2,10 +2,12 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  split-upm:
+  upm-branch:
       name: split upm branch
       runs-on: ubuntu-latest
       steps:
