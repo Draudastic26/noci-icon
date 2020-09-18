@@ -1,0 +1,15 @@
+{
+    "name": "Drstc.Noci.Editor",
+    "references": [
+        "GUID:1ab33aa212937864c990b09d4205533d"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
