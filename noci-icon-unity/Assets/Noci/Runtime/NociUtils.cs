@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace drstc.nociincon
+namespace drstc.noci
 {    
     public static class NociUtils
     {

@@ -4,7 +4,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace drstc.nociincon
+namespace drstc.noci
 {
     public class NociEditor : EditorWindow
     {

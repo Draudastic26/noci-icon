@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace drstc.nociincon
+namespace drstc.noci
 {
     public enum CellState { Dead = 0, Alive = 1, Contour = 2 }
 

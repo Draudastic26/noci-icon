@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace drstc.nociincon
+namespace drstc.noci
 {
     [RequireComponent(typeof(SpriteRenderer))]
     public class NociRenderer : MonoBehaviour
