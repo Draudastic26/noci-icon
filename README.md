@@ -16,7 +16,7 @@ TODO: via upm branch or simply clone
 
 ## Usage
 
-Either as editor tool and save as sprite or at runtime
+Either as editor tool and save a sprite or at runtime.
 
 ### Editor tool
 
