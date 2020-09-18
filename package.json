@@ -1,0 +1,19 @@
+{
+    "name": "com.drstc.noci",
+    "displayName": "NOCI|ICON",
+    "version": "0.1.0",
+    "unity": "2020.1",
+    "description": "A unity tool to generate small random icons.    ",
+    "author": {
+        "name": "Draudastic",
+        "email": "via gitHub",
+        "url": "https://github.com/Draudastic26"
+    },
+    "samples": [
+        {
+            "displayName": "Demo Scene",
+            "description": "A small demo for noci icons",
+            "path": "Samples~/Demo-SimpleArray"
+        }
+    ]
+}
