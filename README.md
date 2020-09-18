@@ -1,10 +1,10 @@
 # noci-icon
 
-![0](img/0.png)
-![1](img/1.png)
-![2](img/2.png)
-![3](img/3.png)
-![4](img/4.png)
+![0](img/0.png | width=64)
+![1](img/1.png | width=64)
+![2](img/2.png | width=64)
+![3](img/3.png | width=64)
+![4](img/4.png | width=64)
 
 A unity tool to create small random icons.
 
@@ -16,7 +16,7 @@ TODO: via upm branch or simply clone
 
 TODO: Either as editor tool and save as Sprite or runtime with several options.
 
-![noci-generator](img/noci-generator.png)
+![noci-generator](img/noci-generator.png | width=256)
 
 ## References
 
