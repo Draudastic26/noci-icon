@@ -7,8 +7,19 @@ namespace drstc.nociincon
 
     public class Noci
     {
+        /// <summary>
+        /// The config defines the appearance of the icon.
+        /// </summary>
         public NociConfig Config { get; private set; }
+
+        /// <summary>
+        /// Same seed will alway generate the same icons.
+        /// </summary>
         public int Seed { get; private set; }
+
+        /// <summary>
+        /// Counts the calles Rerolls. 
+        /// </summary>
         public int RerollCount { get; private set; }
 
         private CellState[,] grid;
@@ -63,7 +74,7 @@ namespace drstc.nociincon
         {
             if(scaleFactor < 1)
             {
-                Debug.Log($"Scale factor can't be lower than 1, will be set to 2");
+                Debug.Log($"Scale factor can't be lower than 1. Will be set to 2");
                 scaleFactor = 2;
             }
 

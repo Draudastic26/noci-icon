@@ -12,7 +12,7 @@ namespace drstc.nociincon
             var uniqueFileName = AssetDatabase.GenerateUniqueAssetPath(path);
             byte[] bytes = texture.EncodeToPNG();
             System.IO.File.WriteAllBytes(uniqueFileName, bytes);
-            Debug.Log(bytes.Length + "bytes were saved as: " + uniqueFileName);
+            Debug.Log(bytes.Length + " bytes were saved as: " + uniqueFileName);
         }
     }
 }
