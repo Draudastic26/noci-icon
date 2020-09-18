@@ -22,4 +22,4 @@ TODO: Either as editor tool and save as Sprite or runtime with several options.
 
 - Based on the algorithm by [yurkth](https://github.com/yurkth/sprator)
 
-**Unity 2020.1.0f1**
+**Unity 2020.1.6f1**
