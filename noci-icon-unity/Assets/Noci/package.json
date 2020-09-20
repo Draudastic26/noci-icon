@@ -1,6 +1,6 @@
 {
     "name": "com.drstc.noci",
-    "displayName": "NOCI|ICON",
+    "displayName": "Noci",
     "version": "0.1.0",
     "unity": "2020.1",
     "description": "A unity tool to generate small random icons.    ",
