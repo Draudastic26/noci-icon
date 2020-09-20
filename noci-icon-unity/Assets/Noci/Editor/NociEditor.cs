@@ -8,12 +8,13 @@ namespace drstc.noci
 {
     public class NociEditor : EditorWindow
     {
-        public const string NOCI_NAME = "NOCI | ICON";
+        public const string NOCI_NAME = "NOCI";
 
         private const int SLIDER_ITERATION_MIN = 1;
         private const int SLIDER_ITERATION_MAX = 10;
 
-        private readonly string urlStyle = "Assets/Scripts/Editor/NociEditor.uss";
+        private readonly string urlStyleEditor = "Assets/Noci/Editor/NociEditor.uss";
+        private readonly string urlStylePackage = "Editor/NociEditor.uss";
 
         private readonly Vector2Int defaultDimension = new Vector2Int(10, 10);
         private readonly int defaultIteration = 2;
@@ -55,7 +56,7 @@ namespace drstc.noci
 
             // Reference to the root of the window.
             var root = rootVisualElement;
-            root.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>(urlStyle));
+            root.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>(File.Exists(urlStylePackage) ? urlStylePackage : urlStyleEditor));
 
             var header = new Label(NOCI_NAME);
             header.AddToClassList("heading");

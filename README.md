@@ -20,7 +20,7 @@ Either as editor tool and save a sprite or at runtime.
 
 ### Editor tool
 
-<img src="https://github.com/Draudastic26/noci-icon/blob/develop/img/noci-generator.png" width="256">
+![generator](img/noci-generator.png)
 
 ### Runtime example usage
 
@@ -36,7 +36,7 @@ private void Start()
     newConfig.ContourColor = Color.green;
     newConfig.CellColor = Color.gray;
 
-    // Crate a noci instance with random seed (or pass some seed).
+    // Create a noci instance with random seed (or pass some seed).
     noci = new Noci(config);
 
     // Assign generated texture to e.g. a SpriteRenderer component
