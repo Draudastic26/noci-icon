@@ -14,7 +14,7 @@ namespace drstc.noci
         private const int SLIDER_ITERATION_MAX = 10;
 
         private readonly string urlStyleEditor = "Assets/Noci/Editor/NociEditor.uss";
-        private readonly string urlStylePackage = "Editor/NociEditor.uss";
+        private readonly string urlStylePackage = "Package/com.drstc.noci/Editor/NociEditor.uss";
 
         private readonly Vector2Int defaultDimension = new Vector2Int(10, 10);
         private readonly int defaultIteration = 2;

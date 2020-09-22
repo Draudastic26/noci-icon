@@ -1,4 +1,4 @@
-# noci-icon
+# Noci
 
 ![0](img/0.png)
 ![1](img/1.png)
@@ -12,7 +12,8 @@ A unity tool to generate small random icons.
 
 ## Installation
 
-TODO: via upm branch or simply clone
+Add package from git URL via Package Manager and insert:  
+`https://github.com/Draudastic26/noci-icon.git#upm`
 
 ## Usage
 
@@ -43,6 +44,8 @@ private void Start()
     rend.sprite = noci.GetSprite();
 }
 ```
+
+Or see `Demo-SimpleArray` scene, which can be imported via the Package Manager.
 
 ## References
 
