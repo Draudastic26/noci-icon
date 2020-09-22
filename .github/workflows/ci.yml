@@ -13,10 +13,13 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      - name: Copy file
+        uses: canastro/copy-action@0.0.2
+        with:
+          source: README.md
+          target: noci-icon-unity/Assets/Noci/README.md
       - name: split upm branch
         run: |
-          # Copy readme to package dir
-          cp README.md $PKG_ROOT
           git branch -d upm &> /dev/null || echo upm branch not found
           git subtree split -P "$PKG_ROOT" -b upm
           git checkout upm
